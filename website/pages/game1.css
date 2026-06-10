@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0f172a;
+    font-family: Arial, sans-serif;
+}
+
+#gameScreen {
+    background-color: #ffffff;
+    width: 100%;
+    height: 1000px;
+ 
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+   
+
+    cursor: pointer;
+}
+
+#message {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight:900;
+   color:#1e3a8a ;
+    text-align: center;
+}
+
+button {
+    padding: 15px 30px;
+
+    font-size: 1.2rem;
+    font-weight:900;
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+#playAgainBtn {
+    display: none;
+    
+}

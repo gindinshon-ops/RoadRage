@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Runner Game</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+
+  <div id="Maintxt">⏱️ Choose Your Difficulty ⏱️</div>
+
+  <div class="menu-container"> 
+    <div id="finger-pointer">👉</div>
+    <button id="lvl1btn" onclick="location.href='1.html'">1</button>
+    <button id="lvl2btn" onclick="location.href='2.html'">2</button>
+    <button id="lvl3btn" onclick="location.href='3.html'">3</button>
+  </div>
+  
+  <script>
+    const buttons = document.querySelectorAll('.menu-container button');
+    const finger = document.getElementById('finger-pointer');
+
+    buttons.forEach(button => {
+      button.addEventListener('mouseenter', (e) => {
+  
+        finger.style.opacity = "1";
+        
+      
+        const buttonTop = e.target.offsetTop;
+        const buttonHeight = e.target.offsetHeight;
+        const fingerHeight = finger.offsetHeight;
+        
+     
+        finger.style.top = `${buttonTop + (buttonHeight / 2) - (fingerHeight / 2)}px`;
+      });
+    });
+
+
+    document.querySelector('.menu-container').addEventListener('mouseleave', () => {
+      finger.style.opacity = "0";
+    });
+  </script>
+
+  <script src="dist/game.ts"></script>
+
+</body>
+</html>

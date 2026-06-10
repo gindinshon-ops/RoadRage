@@ -1,0 +1,153 @@
+/* --- Core Setup & Reset --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #0f172a; /* Exact deep slate background */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+/* --- Layout Master Container --- */
+.menu-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Splits the screen cleanly into 50/50 blocks */
+  align-items: center;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* --- Left Column: Text Styling --- */
+.text-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+#Maintxt {
+  color: #1e3a8a; /* Your brand blue logo tone */
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  margin-bottom: 0.5rem;
+}
+
+#Mode {
+  font-family: 'Arial Black', Impact, sans-serif;
+  font-size: 6.5rem;
+  font-style: italic;
+  font-weight: 900;
+  color: aliceblue;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+  opacity: 0.7; /* Softens the text to let the buttons pop */
+}
+
+/* --- Right Column: Button Grid --- */
+.button-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem; /* Clean, modern layout spacing */
+}
+
+/* --- Universal Button Base Styles --- */
+button {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Main Play Button --- */
+#Btn {
+  width: 260px;
+  height: 260px;
+  background-color: #132761; /* Exact primary button color */
+  border-radius: 40px; /* Sophisticated squircle border */
+  font-size: 3.5rem;
+  font-style: italic;
+  font-weight: 900;
+  color: aliceblue;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+#Btn:hover {
+  background-color: #1a337a; /* Sleek brightness shift */
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+
+/* --- Leaderboard Button --- */
+#LBBtn {
+  width: 220px;
+  height: 220px;
+  font-size: 25.5px;
+  font-weight: 750;
+  color: #ffffff;
+  font-style: italic;
+  background-color: #182c63; /* Exact secondary button color */
+  border-radius: 35px;
+  background-size: 45%; /* Perfectly scales the 1-2-3 podium image */
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+#LBBtn:hover {
+  background-color: #213a7d;
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Premium Staggered Float Animation --- */
+#Btn, #LBBtn {
+  animation: floatUp 4s ease-in-out infinite alternate;
+}
+
+#LBBtn {
+  animation-delay: 0.3s; /* Breaks synchronization for an organic feel */
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
+/* --- Responsive Layout for Mobile/Small Screens --- */
+@media (max-width: 900px) {
+  .menu-layout {
+    grid-template-columns: 1fr; /* Stacks vertically on smaller screens */
+    text-align: center;
+    gap: 3rem;
+  }
+  .text-group {
+    text-align: center;
+  }
+  .button-group {
+    justify-content: center;
+  }
+  #Mode {
+    font-size: 4.5rem;
+  }
+}
