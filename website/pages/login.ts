@@ -1,30 +1,31 @@
-import { getDB } from "./db";
+import { send } from "clientUtilities"; // Imports the send function so we can talk to the server
 
-const loginForm = document.getElementById("loginForm") as HTMLFormElement;
-const usernameInput = document.getElementById("username") as HTMLInputElement;
-const passwordInput = document.getElementById("password") as HTMLInputElement;
+var UsernameInput = document.querySelector<HTMLInputElement>("#UsernameInput")!; // Gets the username input from the HTML
+var PasswordInput = document.querySelector<HTMLInputElement>("#PasswordInput")!; // Gets the password input from the HTML
+var LoginSubmitButton = document.querySelector<HTMLButtonElement>("#LoginSubmitButton")!; // Gets the login button from the HTML
+var ErrorMessage = document.querySelector<HTMLParagraphElement>("#ErrorMessage")!; // Gets the error message from the HTML
+var userToken = localStorage.getItem("userToken");
 
-loginForm.addEventListener("submit", async (e: SubmitEvent) => {
-    e.preventDefault();
-    
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value;
+if (userToken !=null)
+{
+  location.href = "/website/pages/Start.html";
+}
 
-    try {
-        const db = await getDB();
+else{
+LoginSubmitButton.onclick = async function() { 
+  var username = UsernameInput.value; 
+  var password = PasswordInput.value; 
 
-        const stmt = db.prepare("SELECT username FROM users WHERE username=:user AND password=:pass");
-        const userRow = stmt.getAsObject({ ":user": username, ":pass": password });
-        stmt.free();
+  var userToken = await send<string | null>("Login", username, password); 
+  
 
-        if (userRow && typeof userRow.username === 'string' && userRow.username.length > 0) {
-            sessionStorage.setItem("currentUser", username);
-            window.location.href = "game1.html"; 
-        } else {
-            alert("Either the password or the username are incorrect.");
-        }
-    } catch (err) {
-        console.error("Login Error:", err);
-        alert("Could not connect to database. Make sure you are using a local server.");
-    }
-});
+  if (userToken != null) { 
+    ErrorMessage.style.visibility = "hidden"; 
+    localStorage.setItem("userToken", userToken); 
+    location.href = "/website/pages/Lobby.html"; 
+
+  } else { 
+    ErrorMessage.style.visibility = "visible"; 
+  }
+}
+}

@@ -1,32 +1,24 @@
-const welcomeMessage = document.getElementById("welcomeMessage") as HTMLHeadingElement;
-const playBtn = document.getElementById("playBtn") as HTMLAnchorElement;
-const authBtn = document.getElementById("authBtn") as HTMLAnchorElement;
-const logoutBtn = document.getElementById("logoutBtn") as HTMLButtonElement;
+import { send } from "clientUtilities";
+import type { User } from "types";
 
-function checkSession(): void {
-    // Reads from the active session slot managed by auth.ts
-    const currentUser = sessionStorage.getItem("currentUser");
+var welcomeMessage1 = document.querySelector<HTMLElement>("#welcomeMessage")!;
+var ldbBtn= document.querySelector<HTMLButtonElement>("#ldbBtn")!;
+var loginBtn = document.querySelector<HTMLButtonElement>("#loginBtn")!;
+var usertoken = localStorage.getItem("token");
+var user = await send<User | null>("getUser", usertoken);
 
-    if (currentUser) {
-        // Logged-in state layout shifts
-        welcomeMessage.innerText = `Welcome back, ${currentUser}!`;
-        playBtn.style.display = "block";
-        authBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-    } else {
-        // Logged-out state layout shifts
-        welcomeMessage.innerText = "Ready to test your reflexes?";
-        playBtn.style.display = "none";
-        authBtn.style.display = "block";
-        logoutBtn.style.display = "none";
-    }
+if (user != null) {
+    location.href = "/website/pages/main1.html";
+}
+else {
+    localStorage.removeItem("token");
 }
 
-// Clears tracking parameters when opting out of session manually
-logoutBtn.addEventListener("click", () => {
-    sessionStorage.removeItem("currentUser");
-    checkSession();
-});
-
-// Run layout verification routine on load
-checkSession();
+loginBtn.onclick = async function () 
+{
+    location.href="/website/pages/login.html";
+}
+ldbBtn.onclick = async function () 
+{
+    location.href="/website/pages/main1.html";
+}

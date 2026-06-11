@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Project.DatabaseUtilities;
 using Project.LoggingUtilities;
 using Project.ServerUtilities;
-
 class Program
 {
   static void Main()
@@ -26,6 +28,44 @@ class Program
 
       try
       {
+
+        if (request.Name == "Login")
+        {
+          var (username, password) = request.GetParams<(string, string)>();
+
+          var user = database.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
+
+          request.Respond(user?.Token);
+        }
+
+        else if (request.Name == "Signup")
+        {
+          var (username, password) = request.GetParams<(string, string)>();
+
+          if (database.Users.Any(u => u.Username == username))
+          {
+            request.Respond<string?>(null);
+            continue;
+          }
+
+          var token = Guid.NewGuid().ToString();
+          var user = new User(username, password, token);
+
+          database.Users.Add(user);
+          database.SaveChanges();
+
+          request.Respond(token);
+        }
+
+
+
+
+
+
+
+
+
+
         if (request.Name == "submitRecord")
         {
           var (name, score) = request.GetParams<(string, int)>();
@@ -51,7 +91,9 @@ class Program
 
 class Database() : DatabaseCore("database")
 {
+  public DbSet<User> Users { get; set; } = default!;
   public DbSet<Record> Records { get; set; } = default!;
+
 }
 
 class Record(string name, int score)
@@ -60,3 +102,13 @@ class Record(string name, int score)
   public string Name { get; set; } = name;
   public int Score { get; set; } = score;
 }
+
+class User(string username, string password, string token)
+{
+  public int Id { get; set; } = default!;
+  public string Token { get; set; } = token;
+
+  public string Username { get; set; } = username;
+  public string Password { get; set; } = password;
+}
+

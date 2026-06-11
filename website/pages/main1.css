@@ -40,7 +40,7 @@ p {
     gap: 15px;
 }
 
-#loginBtn {
+.btn {
     display: block;
     padding: 12px;
     text-decoration: none;
@@ -52,7 +52,7 @@ p {
     box-sizing: border-box;
 }
 
-
+/* Vibrant blue button */
 .btn-primary {
     background-color: #0077b6; 
     color: #fff;
