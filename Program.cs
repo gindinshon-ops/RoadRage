@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Project.DatabaseUtilities;
 using Project.LoggingUtilities;
 using Project.ServerUtilities;
+
 class Program
 {
   static void Main()
@@ -16,6 +14,8 @@ class Program
     var server = new Server(port);
     var database = new Database();
 
+    database.Database.EnsureCreated();
+
     Console.WriteLine("The server is running");
     Console.WriteLine($"Local:   http://localhost:{port}/website/pages/index.html");
     Console.WriteLine($"Network: http://{Network.GetLocalNetworkIPAddress()}:{port}/website/pages/index.html");
@@ -24,32 +24,42 @@ class Program
     {
       var request = server.WaitForRequest();
 
-      Console.WriteLine($"Recieved a request: {request.Name}");
+      Console.WriteLine($"Received a request: {request.Name}");
 
       try
       {
-
         if (request.Name == "Login")
         {
           var (username, password) = request.GetParams<(string, string)>();
 
-          var user = database.Users.FirstOrDefault(u => u.Username == username && u.Password == password);
+          var user = database.Users.FirstOrDefault(user =>
+            user.Username == username &&
+            user.Password == password
+          );
 
-          request.Respond(user?.Token);
+          request.Respond<string?>(user?.Token);
         }
 
         else if (request.Name == "Signup")
         {
           var (username, password) = request.GetParams<(string, string)>();
 
-          if (database.Users.Any(u => u.Username == username))
+          bool usernameAlreadyExists = database.Users.Any(user => user.Username == username);
+
+          if (usernameAlreadyExists)
           {
             request.Respond<string?>(null);
             continue;
           }
 
-          var token = Guid.NewGuid().ToString();
-          var user = new User(username, password, token);
+          string token = Guid.NewGuid().ToString();
+
+          var user = new User
+          {
+            Username = username,
+            Password = password,
+            Token = token
+          };
 
           database.Users.Add(user);
           database.SaveChanges();
@@ -57,58 +67,68 @@ class Program
           request.Respond(token);
         }
 
-
-
-
-
-
-
-
-
-
-        if (request.Name == "submitRecord")
+        else if (request.Name == "SubmitRecord" || request.Name == "submitRecord")
         {
           var (name, score) = request.GetParams<(string, int)>();
-          var record = new Record(name, score);
+
+          var record = new Record
+          {
+            Name = name,
+            Score = score
+          };
+
           database.Records.Add(record);
           database.SaveChanges();
+
+          request.Respond(true);
         }
-        if (request.Name == "getRecords")
+
+        else if (request.Name == "GetRecords" || request.Name == "getRecords")
         {
-          var records = database.Records.OrderBy(record => -record.Score);
+          var records = database.Records
+            .OrderBy(record => record.Score)
+            .ToList();
 
           request.Respond(records);
+        }
+
+        else
+        {
+          request.SetStatusCode(404);
+          request.Respond($"Unknown request: {request.Name}");
         }
       }
       catch (Exception exception)
       {
         request.SetStatusCode(500);
+        request.Respond("Server error");
         Log.WriteException(exception);
       }
     }
   }
 }
 
-class Database() : DatabaseCore("database")
+class Database : DatabaseCore
 {
+  public Database() : base("database")
+  {
+  }
+
   public DbSet<User> Users { get; set; } = default!;
   public DbSet<Record> Records { get; set; } = default!;
-
 }
 
-class Record(string name, int score)
+class User
 {
-  public int Id { get; set; } = default!;
-  public string Name { get; set; } = name;
-  public int Score { get; set; } = score;
+  public int Id { get; set; }
+  public string Token { get; set; } = "";
+  public string Username { get; set; } = "";
+  public string Password { get; set; } = "";
 }
 
-class User(string username, string password, string token)
+class Record
 {
-  public int Id { get; set; } = default!;
-  public string Token { get; set; } = token;
-
-  public string Username { get; set; } = username;
-  public string Password { get; set; } = password;
+  public int Id { get; set; }
+  public string Name { get; set; } = "";
+  public int Score { get; set; }
 }
-

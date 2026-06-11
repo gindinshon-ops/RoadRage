@@ -1,35 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reaction Timer - Create Account</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
-    <link rel="stylesheet" href="LoginSignup.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reaction Timer - Create Account</title>
+  <link rel="stylesheet" href="LoginSignup.css" />
 </head>
+
 <body>
-    <div class="auth-container">
-        <h2>Create Account</h2>
-        
-        <form id="signupForm">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Choose a username" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Create a password" required>
-            </div>
-            
-            <button type="submit">Sign Up</button>
-        </form>
-        
-        <div class="toggle-container">
-            <a href="login.html">Already have an account? Login</a>
-        </div>
+  <div class="auth-container">
+    <h2>Create Account</h2>
+
+    <div class="input-group">
+      <label for="UsernameInput">Username</label>
+      <input type="text" id="UsernameInput" placeholder="Choose a username" />
     </div>
 
-    <script type="module" src="signup.js"></script>
+    <div class="input-group">
+      <label for="PasswordInput">Password</label>
+      <input type="password" id="PasswordInput" placeholder="Create a password" />
+      <img id="PasswordEyeImg" src="../images/open_eye.png" alt="Show password" class="eye-icon" />
+    </div>
+
+    <div class="input-group">
+      <label for="ConfirmPasswordInput">Confirm Password</label>
+      <input type="password" id="ConfirmPasswordInput" placeholder="Confirm password" />
+      <img id="ConfirmPasswordEyeImg" src="../images/open_eye.png" alt="Show password" class="eye-icon" />
+    </div>
+
+    <div id="ErrorDiv" class="error-message"></div>
+
+    <button type="button" id="CreateAccountButton">Sign Up</button>
+
+    <div class="toggle-container">
+      <a href="login.html">Already have an account? Login</a>
+    </div>
+  </div>
+
+  <script type="module" src="signup.js"></script>
 </body>
 </html>

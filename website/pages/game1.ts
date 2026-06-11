@@ -1,101 +1,138 @@
-const gameScreen = document.getElementById("gameScreen") as any;
-const message = document.getElementById("message") as any;
-const startBtn = document.getElementById("startBtn") as any;
-const playAgainBtn = document.getElementById("playAgainBtn") as any;
+import { send } from "clientUtilities";
 
-let gameState: string = "idle";
-let startTime: number = 0;
-let timeoutId: any;
+console.log("game1.ts loaded");
 
-startBtn.addEventListener("click", (event: any) => {
-    event.stopPropagation();
-    startGame();
-});
+const gameScreen = document.querySelector<HTMLDivElement>("#gameScreen")!;
+const message = document.querySelector<HTMLElement>("#message")!;
+const startBtn = document.querySelector<HTMLButtonElement>("#startBtn")!;
+const playAgainBtn = document.querySelector<HTMLButtonElement>("#playAgainBtn")!;
 
-playAgainBtn.addEventListener("click", (event: any) => {
-    event.stopPropagation();
-});
+if (
+  gameScreen === null ||
+  message === null ||
+  startBtn === null ||
+  playAgainBtn === null
+) {
+  throw new Error("game1.html is missing one or more required elements.");
+}
 
-gameScreen.addEventListener("click", handleScreenClick);
+type GameState = "idle" | "waiting" | "ready" | "result";
+
+let gameState: GameState = "idle";
+let startTime = 0;
+let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+startBtn.onclick = function (event: MouseEvent): void {
+  event.stopPropagation();
+  startGame();
+};
+
+playAgainBtn.onclick = function (event: MouseEvent): void {
+  event.stopPropagation();
+  resetGame();
+};
+
+gameScreen.onclick = function (): void {
+  handleScreenClick();
+};
 
 function startGame(): void {
-    gameState = "waiting";
-  
-    startBtn.style.display = "none";
-    playAgainBtn.style.display = "none";
+  gameState = "waiting";
 
-    gameScreen.style.backgroundColor = "red";
-    message.textContent = "Wait for Green...";
+  startBtn.style.display = "none";
+  playAgainBtn.style.display = "none";
 
-    const randomDelay: number = Math.random() * 4000 + 2000;
+  gameScreen.style.backgroundColor = "red";
+  message.innerText = "Wait for Green...";
 
-    timeoutId = setTimeout(() => {
-        turnGreen();
-    }, randomDelay);
+  const randomDelay = Math.random() * 4000 + 2000;
+
+  timeoutId = setTimeout(function (): void {
+    turnGreen();
+  }, randomDelay);
 }
 
 function turnGreen(): void {
-    gameState = "ready";
+  gameState = "ready";
 
-    gameScreen.style.backgroundColor = "green";
-    message.textContent = "CLICK!";
+  gameScreen.style.backgroundColor = "green";
+  message.innerText = "CLICK!";
 
-    startTime = performance.now();
+  startTime = performance.now();
 }
 
 function handleScreenClick(): void {
-    if (gameState === "waiting") {
-        tooSoon();
-        return;
-    }
+  if (gameState === "idle" || gameState === "result") {
+    return;
+  }
 
-    if (gameState === "ready") {
-        endGame();
-        return;
-    }
+  if (gameState === "waiting") {
+    tooSoon();
+    return;
+  }
+
+  if (gameState === "ready") {
+    endGame();
+    return;
+  }
 }
 
 function tooSoon(): void {
+  if (timeoutId !== null) {
     clearTimeout(timeoutId);
+    timeoutId = null;
+  }
 
-    gameState = "result";
+  gameState = "result";
 
-    gameScreen.style.backgroundColor = "orange";
-    message.textContent = "Too Soon!";
+  gameScreen.style.backgroundColor = "orange";
+  message.innerText = "Too Soon!";
 
-    playAgainBtn.style.display = "block";
+  playAgainBtn.style.display = "block";
 }
 
-
-
-
-import { getDB, saveDB } from "./db"; // <-- Add this import at the very top of Game.ts
-
-// ... Keep all your other existing functions, variables, and click listeners exactly as they are ...
-
 async function endGame(): Promise<void> {
-    const reactionTime: number = Math.round(
-        performance.now() - startTime
-    );
+  const reactionTime = Math.round(performance.now() - startTime);
 
-    gameState = "result";
+  gameState = "result";
 
-    gameScreen.style.backgroundColor = "lightblue";
-    message.textContent = `Your reaction time: ${reactionTime} ms`;
+  gameScreen.style.backgroundColor = "lightblue";
+  message.innerText = `Your reaction time: ${reactionTime} ms`;
 
-    playAgainBtn.style.display = "block";
+  playAgainBtn.style.display = "block";
 
-    // --- NEW: SAVE TO SQLITE ---
-    const currentUser = sessionStorage.getItem("currentUser");
+  await saveScore(reactionTime);
+}
 
-    if (currentUser) {
-        const db = await getDB();
-        // Insert user name and reaction time into the leaderboard
-        db.run("INSERT INTO leaderboard (username, score) VALUES (?, ?)", [currentUser, reactionTime]);
-        saveDB(); // Commit changes to browser local storage
-    } else {
-        message.textContent += " (Log in to save your score!)";
- 
-    }
-    
+async function saveScore(reactionTime: number): Promise<void> {
+  const username = localStorage.getItem("username");
+
+  if (username === null) {
+    message.innerText += "\nLog in to save your score.";
+    return;
+  }
+
+  try {
+    await send<boolean>("SubmitRecord", username, reactionTime);
+    message.innerText += "\nScore saved!";
+  } catch (error) {
+    console.error(error);
+    message.innerText += "\nCould not save score to server.";
+  }
+}
+
+function resetGame(): void {
+  if (timeoutId !== null) {
+    clearTimeout(timeoutId);
+    timeoutId = null;
+  }
+
+  gameState = "idle";
+  startTime = 0;
+
+  gameScreen.style.backgroundColor = "";
+  message.innerText = "Click Start when you are ready.";
+
+  startBtn.style.display = "block";
+  playAgainBtn.style.display = "none";
 }

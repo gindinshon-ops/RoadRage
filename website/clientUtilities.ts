@@ -1,4 +1,13 @@
 /**
+ * Gets a value from the current page's query string.
+ * @param name - The search parameter name to look up.
+ * @returns The parameter value, or null if it is not present.
+ */
+export function getSearchParam(name: string): string | null {
+  return new URLSearchParams(location.search).get(name);
+}
+
+/**
  * Sends a POST request to the specified path with the provided parameters.
  * @param path - The endpoint path to which the request is sent.
  * @param params - The parameters to be sent in the request body. Defaults to an empty array.

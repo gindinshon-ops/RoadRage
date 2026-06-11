@@ -1,100 +1,89 @@
 import { send } from "clientUtilities";
 
-var UserNameInput = document.querySelector<HTMLInputElement>("#UsernameInput")!;
-var PasswordInput = document.querySelector<HTMLInputElement>("#PasswordInput")!;
-var ConfirmPasswordInput = document.querySelector<HTMLInputElement>("#ConfirmPasswordInput")!;
-var CreateAccountButton = document.querySelector<HTMLButtonElement>("#CreateAccountButton")!;
-var userToken = localStorage.getItem("userToken");
-var ErrorDiv = document.querySelector<HTMLElement>("#ErrorDiv")!;
-var PasswordEyeImg = document.querySelector<HTMLImageElement>("#PasswordEyeImg")!;
-var ConfirmPasswordEyeImg = document.querySelector<HTMLImageElement>("#ConfirmPasswordEyeImg")!;
-var openEyeSrc = "../images/open_eye.png";
-var closedEyeSrc = "../images/closed_eye.png";
+console.log("signup.ts loaded");
 
+const UserNameInput = document.querySelector<HTMLInputElement>("#UsernameInput")!;
+const PasswordInput = document.querySelector<HTMLInputElement>("#PasswordInput")!;
+const ConfirmPasswordInput = document.querySelector<HTMLInputElement>("#ConfirmPasswordInput")!;
+const CreateAccountButton = document.querySelector<HTMLButtonElement>("#CreateAccountButton")!;
+const ErrorDiv = document.querySelector<HTMLElement>("#ErrorDiv")!;
+const PasswordEyeImg = document.querySelector<HTMLImageElement>("#PasswordEyeImg")!;
+const ConfirmPasswordEyeImg = document.querySelector<HTMLImageElement>("#ConfirmPasswordEyeImg")!;
 
-if (userToken != null)
-{
-  location.href = "/website/pages/Start.html";
+const openEyeSrc = "../images/open_eye.png";
+const closedEyeSrc = "../images/closed_eye.png";
+
+function togglePassword(input: HTMLInputElement, image: HTMLImageElement): void {
+  if (input.type === "password") {
+    input.type = "text";
+    image.src = closedEyeSrc;
+  } else {
+    input.type = "password";
+    image.src = openEyeSrc;
+  }
 }
-else{
 
-PasswordEyeImg.onclick = function ()
-{
-  if (PasswordInput.type == "password")
-  {
-    PasswordInput.type = "text";
-    PasswordEyeImg.src = closedEyeSrc;
-  }
-  else
-  {
-    PasswordInput.type = "password";
-    PasswordEyeImg.src = openEyeSrc;
-  }
+PasswordEyeImg.onclick = function (): void {
+  togglePassword(PasswordInput, PasswordEyeImg);
 };
 
-ConfirmPasswordEyeImg.onclick = function ()
-{
-  if (ConfirmPasswordInput.type == "password")
-  {
-    ConfirmPasswordInput.type = "text";
-    ConfirmPasswordEyeImg.src = closedEyeSrc;
-  }
-  else
-  {
-    ConfirmPasswordInput.type = "password";
-    ConfirmPasswordEyeImg.src = openEyeSrc;
-  }
+ConfirmPasswordEyeImg.onclick = function (): void {
+  togglePassword(ConfirmPasswordInput, ConfirmPasswordEyeImg);
 };
 
-CreateAccountButton.onclick = async function () 
-{
-  if (UserNameInput.value.length == 0 || PasswordInput.value.length == 0 || ConfirmPasswordInput.value.length == 0)
-  {
-    ErrorDiv.innerText = "You must fill all the text boxes";
+CreateAccountButton.onclick = async function (): Promise<void> {
+  console.log("signup button clicked");
+
+  const username = UserNameInput.value.trim();
+  const password = PasswordInput.value;
+  const confirmPassword = ConfirmPasswordInput.value;
+
+  if (username.length === 0 || password.length === 0 || confirmPassword.length === 0) {
+    ErrorDiv.innerText = "You must fill all the text boxes.";
     return;
   }
 
-  if (UserNameInput.value.length <= 3) 
-  {
-    ErrorDiv.innerText = "The Username is too short.";
+  if (username.length <= 3) {
+    ErrorDiv.innerText = "The username is too short.";
     return;
   }
 
-  if (UserNameInput.value.length >= 12) 
-  {
-    ErrorDiv.innerText = "The Username is too long.";
+  if (username.length >= 12) {
+    ErrorDiv.innerText = "The username is too long.";
     return;
   }
 
-  if (PasswordInput.value != ConfirmPasswordInput.value) 
-  {
+  if (password !== confirmPassword) {
     ErrorDiv.innerText = "Passwords do not match.";
     return;
   }
 
-    if (PasswordInput.value.length < 4) 
-  {
-    ErrorDiv.innerText = "The Passowrd is too short.";
+  if (password.length < 4) {
+    ErrorDiv.innerText = "The password is too short.";
     return;
   }
 
-    if (PasswordInput.value.length > 12) 
-  {
-    ErrorDiv.innerText = "The Passowrd is too Long.";
+  if (password.length > 12) {
+    ErrorDiv.innerText = "The password is too long.";
     return;
   }
 
-  var userToken = await send<string | null>("Signup", UserNameInput.value, PasswordInput.value);
+  try {
+    console.log("sending signup request");
 
-  if (userToken == null) 
-  {
-    ErrorDiv.innerText = "A user with that username already exists.";
-    return;
+    const userToken = await send<string | null>("Signup", username, password);
+
+    console.log("server returned:", userToken);
+
+    if (userToken === null) {
+      ErrorDiv.innerText = "A user with that username already exists.";
+      return;
+    }
+
+    localStorage.setItem("userToken", userToken);
+    location.href = "index.html";
+  } catch (error) {
+    console.error(error);
+    ErrorDiv.innerText = "Could not connect to the server.";
   }
-
-  ErrorDiv.innerText = "";
-
-  localStorage.setItem("userToken", userToken);
-  location.href = "/website/pages/Lobby.html";
-}
-}
+};
