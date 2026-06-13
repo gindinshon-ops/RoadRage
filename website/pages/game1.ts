@@ -1,5 +1,11 @@
 import { send } from "clientUtilities";
 
+const returnBtn = 
+document.querySelector<HTMLButtonElement>(
+  "#returnBtn"
+)!;
+
+
 const gameScreen =
   document.querySelector<HTMLDivElement>(
     "#gameScreen"
@@ -24,7 +30,9 @@ if (
   gameScreen === null ||
   message === null ||
   startBtn === null ||
-  playAgainBtn === null
+  playAgainBtn === null ||
+  returnBtn === null
+  
 ) {
   throw new Error(
     "The game HTML is missing one or more required elements."
@@ -49,6 +57,11 @@ startBtn.onclick =
     startGame();
   };
 
+  returnBtn.onclick = 
+  function (): void {
+    location.href="1.html";
+  }
+
 playAgainBtn.onclick =
   function (event: MouseEvent): void {
     event.stopPropagation();
@@ -66,10 +79,10 @@ function startGame(): void {
   }
 
   gameState = "waiting";
-
+   
   startBtn.style.display = "none";
   playAgainBtn.style.display = "none";
-
+  returnBtn.style.display = "none";
   gameScreen.style.backgroundColor = "red";
   message.innerText = "Wait for Green...";
 
@@ -119,7 +132,7 @@ function tooSoon(): void {
 
   gameScreen.style.backgroundColor = "orange";
   message.innerText = "Too Soon!";
-
+  returnBtn.style.display = "block";
   playAgainBtn.style.display = "block";
 }
 
@@ -137,7 +150,7 @@ async function endGame(): Promise<void> {
     `Your reaction time: ${reactionTime} ms`;
 
   playAgainBtn.style.display = "block";
-
+returnBtn.style.display = "block";
   await saveScore(reactionTime);
 }
 

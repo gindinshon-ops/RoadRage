@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0d1b2a; /* Deep dark blue background */
+    background-color: #030d2c; /* Deep dark blue background */
     color: #e0e1dd; /* Off-white text */
     display: flex;
     justify-content: center;
@@ -10,8 +10,25 @@ body {
     height: 100vh;
 }
 
+ 
+#LogoutBtn {
+    margin-left:137.5px;
+    width: 150px;
+    height:25px;  
+    background-color: #2d3496;
+    color: white; 
+    border-radius: 5px;
+    border-color: #2d3496;
+
+}
+
+#LogoutBtn:hover {
+  scale: 1.01;
+  background-color: #3139ad;
+}
+
 #mainW {
-    background-color: #1b263b; /* Medium dark blue container */
+    background-color: #091731; /* Medium dark blue container */
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
@@ -28,7 +45,7 @@ h1 {
 }
 
 p {
-    color: #a5a5a5;
+    color: #ffffff;
     font-size: 16px;
     margin-bottom: 30px;
     line-height: 1.4;
@@ -54,12 +71,13 @@ p {
 
 /* Vibrant blue button */
 .btn-primary {
-    background-color: #0077b6; 
+    background-color: #2d3496; 
     color: #fff;
 }
 
 .btn-primary:hover {
-    background-color: #0096c7;
+    background-color: #323d81;
+
 }
 
 /* Outline blue button */

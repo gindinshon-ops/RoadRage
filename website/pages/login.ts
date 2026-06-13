@@ -60,7 +60,7 @@ LoginSubmitButton.onclick =
       localStorage.setItem("userToken", userToken);
       localStorage.setItem("username", username);
 
-      location.href = "index.html";
+      location.href = "main1.html";
     } catch (error) {
       console.error("Login failed:", error);
 

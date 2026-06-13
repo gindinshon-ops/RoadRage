@@ -1,25 +1,46 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="scoreboard.css" / >
-    <title>Scoreboard</title>
-  </head>
-  <body>
-    <h1>Scoreboard</h1>
-    <div id="cardDiv">
-            <div id="anchorsDiv">
-        
-      </div>
-      <a id="MP"    href="MainW.html">Main Page</a>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
 
-      <table id="scoreTable">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Reaction Time Scoreboard</title>
+
+  <link rel="stylesheet" href="scoreboard.css" />
+</head>
+
+<body>
+  <main class="scoreboard-container">
+    <h1>Reaction Time Scoreboard</h1>
+
+    <p id="ScoreboardMessage">
+      Loading scores...
+    </p>
+
+    <table id="ScoreboardTable">
+      <thead>
         <tr>
-          <th>PLAYER</th>
-          <th>SCORE</th>
+          <th>Place</th>
+          <th>Username</th>
+          <th>Best Time</th>
         </tr>
-      </table>
-    </div>
-     
-    <script type="module" src="scoreboard.ts"></script>
-  </body>
+      </thead>
+
+      <tbody id="ScoreboardBody">
+      </tbody>
+    </table>
+
+   <button id="backBtn"> back to main </button>
+    <button id="gameBtn"> Game </button>
+  </main>
+
+  <script
+    type="module"
+    src="scoreboard.js"
+  ></script>
+</body>
 </html>
