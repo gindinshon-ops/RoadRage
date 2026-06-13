@@ -17,34 +17,49 @@ class Program
     database.Database.EnsureCreated();
 
     Console.WriteLine("The server is running");
-    Console.WriteLine($"Local:   http://localhost:{port}/website/pages/login.html");
-    Console.WriteLine($"Network: http://{Network.GetLocalNetworkIPAddress()}:{port}/website/pages/login.html");
+
+    Console.WriteLine(
+      $"Local: http://localhost:{port}/website/pages/index.html"
+    );
+
+    Console.WriteLine(
+      $"Network: http://{Network.GetLocalNetworkIPAddress()}:{port}/website/pages/index.html"
+    );
 
     while (true)
     {
       var request = server.WaitForRequest();
 
-      Console.WriteLine($"Received a request: {request.Name}");
+      Console.WriteLine(
+        $"Received a request: {request.Name}"
+      );
 
       try
       {
         if (request.Name == "Login")
         {
-          var (username, password) = request.GetParams<(string, string)>();
+          var (username, password) =
+            request.GetParams<(string, string)>();
 
-          var user = database.Users.FirstOrDefault(user =>
-            user.Username == username &&
-            user.Password == password
-          );
+          var user =
+            database.Users.FirstOrDefault(
+              currentUser =>
+                currentUser.Username == username &&
+                currentUser.Password == password
+            );
 
           request.Respond<string?>(user?.Token);
         }
 
         else if (request.Name == "Signup")
         {
-          var (username, password) = request.GetParams<(string, string)>();
+          var (username, password) =
+            request.GetParams<(string, string)>();
 
-          bool usernameAlreadyExists = database.Users.Any(user => user.Username == username);
+          bool usernameAlreadyExists =
+            database.Users.Any(
+              user => user.Username == username
+            );
 
           if (usernameAlreadyExists)
           {
@@ -52,7 +67,8 @@ class Program
             continue;
           }
 
-          string token = Guid.NewGuid().ToString();
+          string token =
+            Guid.NewGuid().ToString();
 
           var user = new User
           {
@@ -67,13 +83,28 @@ class Program
           request.Respond(token);
         }
 
-        else if (request.Name == "SubmitRecord" || request.Name == "submitRecord")
+        else if (
+          request.Name == "SubmitRecord"
+        )
         {
-          var (name, score) = request.GetParams<(string, int)>();
+          var (token, score) =
+            request.GetParams<(string, int)>();
+
+          var user =
+            database.Users.FirstOrDefault(
+              currentUser =>
+                currentUser.Token == token
+            );
+
+          if (user == null)
+          {
+            request.Respond(false);
+            continue;
+          }
 
           var record = new Record
           {
-            Name = name,
+            Name = user.Username,
             Score = score
           };
 
@@ -83,11 +114,15 @@ class Program
           request.Respond(true);
         }
 
-        else if (request.Name == "GetRecords" || request.Name == "getRecords")
+        else if (
+          request.Name == "GetRecords"
+        )
         {
-          var records = database.Records
-            .OrderBy(record => record.Score)
-            .ToList();
+          var records =
+            database.Records
+              .OrderBy(record => record.Score)
+              .Take(10)
+              .ToList();
 
           request.Respond(records);
         }
@@ -95,14 +130,19 @@ class Program
         else
         {
           request.SetStatusCode(404);
-          request.Respond($"Unknown request: {request.Name}");
+
+          request.Respond(
+            $"Unknown request: {request.Name}"
+          );
         }
       }
       catch (Exception exception)
       {
         request.SetStatusCode(500);
-        request.Respond("Server error");
+
         Log.WriteException(exception);
+
+        request.Respond("Server error");
       }
     }
   }
@@ -114,21 +154,33 @@ class Database : DatabaseCore
   {
   }
 
-  public DbSet<User> Users { get; set; } = default!;
-  public DbSet<Record> Records { get; set; } = default!;
+  public DbSet<User> Users { get; set; }
+    = default!;
+
+  public DbSet<Record> Records { get; set; }
+    = default!;
 }
 
 class User
 {
   public int Id { get; set; }
-  public string Token { get; set; } = "";
-  public string Username { get; set; } = "";
-  public string Password { get; set; } = "";
+
+  public string Token { get; set; }
+    = "";
+
+  public string Username { get; set; }
+    = "";
+
+  public string Password { get; set; }
+    = "";
 }
 
 class Record
 {
   public int Id { get; set; }
-  public string Name { get; set; } = "";
+
+  public string Name { get; set; }
+    = "";
+
   public int Score { get; set; }
 }

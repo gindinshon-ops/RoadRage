@@ -89,3 +89,7 @@ button:hover {
     color: #4caf50;
     text-decoration: underline;
 }
+
+#ErrorMessage{
+    color:red;
+}
