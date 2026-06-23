@@ -158,7 +158,7 @@ class Program
          * which is the starting HTML page of the website.
          */
         Console.WriteLine(
-            $"Local: http://localhost:{port}/website/pages/index.html"
+            $"Local: http://localhost:{port}/website/pages/mainW.html"
         );
 
         /*
@@ -176,10 +176,10 @@ class Program
          *
          * An example result might be:
          *
-         * http://192.168.1.20:5000/website/pages/index.html
+         * http://192.168.1.20:5000/website/pages/main1`.html
          */
         Console.WriteLine(
-            $"Network: http://{Network.GetLocalNetworkIPAddress()}:{port}/website/pages/index.html"
+            $"Network: http://{Network.GetLocalNetworkIPAddress()}:{port}/website/pages/mainW.html"
         );
 
         /*
